@@ -6,6 +6,7 @@ import * as github from '@actions/github';
 import { exec } from '@actions/exec';
 import path from 'path';
 import editJsonFile from 'edit-json-file';
+import { writeFileSync } from 'fs';
 import { Logger } from '@dolittle/github-actions.shared.logging';
 
 const logger = new Logger();
@@ -24,6 +25,7 @@ export async function run() {
         const authorEmail = core.getInput('author-email', { required: false });
         const authorName = core.getInput('author-name', { required: false });
         const mergeStrategy = core.getInput('merge-strategy', { required: false }) || 'merge';
+        const fileType = core.getInput('file-type', { required: false }) || 'json';
 
         const commitSHA = github.context.sha;
         const buildDate = new Date().toISOString();
@@ -34,7 +36,17 @@ export async function run() {
         logger.info(`\tCommit: ${commitSHA}`);
         logger.info(`\tBuilt: ${buildDate}`);
 
-        updateVersionFile(path, version, commitSHA, buildDate);
+        switch(fileType) {
+            case 'json':
+                updateVersionFile(path, version, commitSHA, buildDate);
+                break;
+            case 'txt':
+                writeFileSync(path, version);
+                break;
+            default:
+                updateVersionFile(path, version, commitSHA, buildDate);
+                break;
+        }
         await configureUser(userEmail, userName);
         await configurePull(mergeStrategy);
         await commitVersionFile(path, version, authorEmail, authorName, userEmail, userName);

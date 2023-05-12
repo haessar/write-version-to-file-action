@@ -24,9 +24,13 @@ inputs:
     required: false
     default: ${{ github.actor }}
   merge-strategy:
-      description: How to reconcile divergent branches. Can be either 'merge'(default), 'rebase' or 'fast-forward'
-      required: false
-      default: 'merge'
+    description: How to reconcile divergent branches. Can be either 'merge'(default), 'rebase' or 'fast-forward'
+    required: false
+    default: 'merge'
+  file-type:
+    description: File type for output version file. 'json'(default) is more verbose, 'txt' contains version only.
+    required: false
+    default: 'json'
 
 runs:
   using: 'node16'
