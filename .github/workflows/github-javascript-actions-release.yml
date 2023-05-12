@@ -3,6 +3,7 @@ name: Github JavaScript Actions CI/CD
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 jobs:
   release:
