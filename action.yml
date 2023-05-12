@@ -10,16 +10,24 @@ inputs:
   user-email:
     description: The email of the user that commits the version file
     required: false
-    default: 'build@dolittle.com'
+    default: 41898282+github-actions[bot]@users.noreply.github.com
   user-name:
     description: The name of the user that commits the version file
     required: false
-    default: 'dolittle-build'
+    default: github-actions[bot]
+  author-email:
+    description: The email of the commit author. Defaults to whoever triggered this workflow run.
+    required: false
+    default: ${{ github.actor }}@users.noreply.github.com
+  author-name:
+    description: The user-name of the commit author. Defaults to whoever triggered this workflow run.
+    required: false
+    default: ${{ github.actor }}
   merge-strategy:
       description: How to reconcile divergent branches. Can be either 'merge'(default), 'rebase' or 'fast-forward'
       required: false
       default: 'merge'
- 
+
 runs:
   using: 'node16'
   main: 'release/index.js'

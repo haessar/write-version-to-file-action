@@ -19,8 +19,10 @@ export async function run() {
         const version = core.getInput('version', { required: true });
         const path = core.getInput('path', { required: true });
 
-        const userEmail = core.getInput('user-email', { required: false }) || 'build@dolittle.com';
-        const userName = core.getInput('user-name', { required: false }) || 'dolittle-build';
+        const userEmail = core.getInput('user-email', { required: false });
+        const userName = core.getInput('user-name', { required: false });
+        const authorEmail = core.getInput('author-email', { required: false });
+        const authorName = core.getInput('author-name', { required: false });
         const mergeStrategy = core.getInput('merge-strategy', { required: false }) || 'merge';
 
         const commitSHA = github.context.sha;
@@ -35,7 +37,7 @@ export async function run() {
         updateVersionFile(path, version, commitSHA, buildDate);
         await configureUser(userEmail, userName);
         await configurePull(mergeStrategy);
-        await commitVersionFile(path, version, userEmail, userName);
+        await commitVersionFile(path, version, authorEmail, authorName, userEmail, userName);
         await pushChanges();
 
     } catch (error: any) {
@@ -58,7 +60,8 @@ function updateVersionFile(filePath: string, version: string, commitSHA: string,
     file.save();
 }
 
-async function commitVersionFile(filePath: string, version: string, userEmail: string, userName: string) {
+async function commitVersionFile(filePath: string, version: string,
+     authorEmail: string, authorName: string, userEmail: string, userName: string) {
     logger.info(`Adding and committing ${filePath}`);
     await exec('git add', [filePath]);
     await exec(
@@ -68,8 +71,8 @@ async function commitVersionFile(filePath: string, version: string, userEmail: s
         ],
         {
             env: {
-                GIT_AUTHOR_NAME: userName,
-                GIT_AUTHOR_EMAIL: userEmail,
+                GIT_AUTHOR_NAME: authorName,
+                GIT_AUTHOR_EMAIL: authorEmail,
                 GIT_COMMITTER_NAME: userName,
                 GIT_COMMITTER_EMAIL: userEmail,
             },
